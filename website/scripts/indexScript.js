@@ -7,6 +7,8 @@ socket.addEventListener('open', function (event) {
 
 socket.addEventListener('message', function (event) {
     console.log('Message from server:', event.data);
+    let i = event.data.split('*')
+    document.getElementById(i[0]).innerText = i[1]
 });
 
 socket.addEventListener('error', function (event) {
@@ -54,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             container.appendChild(div);
 
-            div.setAttribute("id", i + ";" + j);
+            div.setAttribute("id", index+"id");
 
             div.addEventListener("click", function (event) {
                 if(div.classList.contains("active")) {
@@ -69,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function sendMessage(message) {
-   socket.send(JSON.stringify(message));
+   socket.send(message);
 }
 
 function activate(id) {
@@ -77,8 +79,6 @@ function activate(id) {
         if (el.id === id) {
             el.classList.add('active');
             el.classList.remove('inactive');
-
-
         } else {
             el.classList.add('inactive');
             el.classList.remove('active');
@@ -89,6 +89,7 @@ function activate(id) {
 function resetAnimation() {
     document.querySelectorAll('.question').forEach(el => {
         el.classList.remove('active', 'inactive');
+        el.innerText = el.id.replace('id', '');
     });
 }
 

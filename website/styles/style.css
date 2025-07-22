@@ -22,7 +22,10 @@
             0% 75%,
             0% 25%
     );
-    transition: transform 0.5s ease, z-index 0s linear 0.5s;
+    left: var(--left, 0px);
+    top: var(--top, 0px);
+    transition: transform 0.5s ease, z-index 10s linear 0.5s, left 0.5s ease-in, top 0.5s ease-in;
+    z-index: 0;
 }
 
 .question:hover {
@@ -30,15 +33,15 @@
 }
 
 .question.inactive {
+    transition: transform 0.5s ease, z-index 0s linear 0.5s, left 0.5s ease-in, top 0.5s ease-in;
     z-index: 0;
-    transition: transform 2s ease, z-index 0s linear 0s;
     opacity: 0.5;
 }
 
 .question.active {
-    top: 0;
-    left: 0;
-    transform: scale(5);
     z-index: 10;
-    transition: transform 2s ease, z-index 0s linear 0s;
+    transform: scale(5);
+    left: calc(50vw - 60px);
+    top: calc(50vh - 60px);
+    transition: transform 0.5s ease, z-index 0s linear 0.5s, left 0.5s ease-in, top 0.5s ease-in;
 }

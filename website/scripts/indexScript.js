@@ -48,9 +48,9 @@ document.addEventListener("DOMContentLoaded", function () {
             const x = rowStartX + j * (questionWidth + questionMargin);
             const y = (i * (questionWidth + questionMargin)) - (i * (23));
 
-            div.style.position = "absolute";
-            div.style.left = `${x}px`;
-            div.style.top = `${y}px`;
+            div.style.setProperty('--left', `${x}px`);
+            div.style.setProperty('--top', `${y}px`);
+
 
             container.appendChild(div);
 

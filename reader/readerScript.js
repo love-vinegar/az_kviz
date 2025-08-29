@@ -55,3 +55,13 @@ function getQuestionFromServer(message) {
 
     socket.send(JSON.stringify(requestDataItem));
 }
+
+function getMarkField(message, value) {
+    const requestDataItem = {
+        sender: "READER",
+        action: "MARK_FIELD",
+        payload: message + "*" + value
+    };
+
+    socket.send(JSON.stringify(requestDataItem));
+}

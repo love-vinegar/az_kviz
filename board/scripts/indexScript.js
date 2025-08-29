@@ -2,13 +2,20 @@ const socket = new WebSocket('ws://localhost:8080/ws');
 
 socket.addEventListener('open', function (event) {
     console.log('WebSocket connected');
-    socket.send('board');
+    const requestDataItem = {
+        sender: "BOARD",
+        action: "IDLE",
+        payload: ""
+    };
+
+    socket.send(JSON.stringify(requestDataItem));
 });
 
 socket.addEventListener('message', function (event) {
-    console.log('Message from server:', event.data);
+    console.log('Message from server:', event);
     let i = event.data.split('*')
-    document.getElementById(i[0]).innerText = i[1]
+    console.log(i)
+    document.getElementById(i[0]+"id").innerText = i[1]
 });
 
 socket.addEventListener('error', function (event) {
@@ -45,7 +52,6 @@ document.addEventListener("DOMContentLoaded", function () {
             const div = document.createElement("div");
             div.classList.add("question");
             div.textContent = index;
-            index++;
 
             const x = rowStartX + j * (questionWidth + questionMargin);
             const y = (i * (questionWidth + questionMargin)) - (i * (23));
@@ -57,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
             container.appendChild(div);
 
             div.setAttribute("id", index+"id");
+            index++;
 
             div.addEventListener("click", function (event) {
                 if(div.classList.contains("active")) {
@@ -64,14 +71,20 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
                 activate(div.getAttribute("id"))
-                sendMessage(div.getAttribute("id"));
+                getQuestionFromServer(div.getAttribute("id"));
             })
         }
     }
 });
 
-function sendMessage(message) {
-   socket.send(message);
+function getQuestionFromServer(message) {
+    const requestDataItem = {
+        sender: "BOARD",
+        action: "GET_QUESTION",
+        payload: message.slice(0, -2)
+    };
+
+    socket.send(JSON.stringify(requestDataItem));
 }
 
 function activate(id) {

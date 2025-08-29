@@ -1,0 +1,23 @@
+
+.reader_elements {
+    height: 250px;
+    width: 1000px;
+
+    border-style: solid;
+    border-width: 20px;
+    border-radius: 10px;
+    border-color: black;
+    font-size: 100px;
+}
+
+button {
+    height: 250px;
+    width: 250px;
+    font-size: 80px;
+}
+
+#container > button {
+    height: 200px;
+    width: 200px;
+    font-size: 80px;
+}

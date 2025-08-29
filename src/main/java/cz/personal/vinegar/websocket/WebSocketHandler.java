@@ -1,8 +1,8 @@
 package cz.personal.vinegar.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.personal.vinegar.dataObjects.Question;
 import cz.personal.vinegar.dataObjects.RequestDataItem;
-import cz.personal.vinegar.enums.Sender;
 import cz.personal.vinegar.services.QuestionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,18 +31,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
         try {
             RequestDataItem dataItem = objectMapper.readValue(message.getPayload(), RequestDataItem.class);
 
-            if(dataItem.getSender().equals(BOARD) && boardSession == null) {
+            if(dataItem.getSender().equals(BOARD)) {
                 log.info("Received BOARD response");
                 boardSession = session;
-                return;
-            } else if (dataItem.getSender().equals(READER) && readerSession == null) {
+            } else if (dataItem.getSender().equals(READER)) {
                 log.info("Received READER response");
                 readerSession = session;
-                return;
             }
 
             if(boardSession == null || readerSession == null) {
-                log.warn("Session is null");
+                log.warn("Game is not ready");
                 return;
             }
 
@@ -50,9 +48,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
             switch(dataItem.getAction()) {
                 case GET_QUESTION -> {
                     String questionCode = questionService.getQuestionCode(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
-                    String question = questionService.getQuestion(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
+                    Question question = questionService.getQuestion(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
                     boardSession.sendMessage(new TextMessage(dataItem.getPayload() + "*" + questionCode));
-                    readerSession.sendMessage(new TextMessage(question));
+                    readerSession.sendMessage(new TextMessage(question.getQuestionText() + "*" + question.getAnswer()));
+                }
+                case IDLE -> {
+                    log.info("Received IDLE response");
                 }
                 default -> {
                     log.error("Unknown action {}", dataItem.getAction());

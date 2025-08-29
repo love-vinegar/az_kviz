@@ -13,9 +13,10 @@ socket.addEventListener('open', function (event) {
 
 socket.addEventListener('message', function (event) {
     console.log('Message from server:', event);
-    let i = event.data.split('*')
-    console.log(i)
-    document.getElementById(i[0]+"id").innerText = i[1]
+    let i = event.data.split('*');
+    console.log(i);
+    document.getElementById(i[0]+"id").innerText = i[1];
+    activate(i[0]+"id");
 });
 
 socket.addEventListener('error', function (event) {
@@ -58,7 +59,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             div.style.setProperty('--left', `${x}px`);
             div.style.setProperty('--top', `${y}px`);
-
 
             container.appendChild(div);
 

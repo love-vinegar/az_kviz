@@ -45,3 +45,15 @@
     top: calc(50vh - 60px);
     transition: transform 0.5s ease, z-index 0s linear 0.5s, left 0.5s ease-in, top 0.5s ease-in;
 }
+
+.blue {
+    background: blue;
+}
+
+.orange {
+    background: orange;
+}
+
+.gray {
+    background: gray;
+}

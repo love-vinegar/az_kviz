@@ -5,4 +5,6 @@ public enum Action {
     IDLE,
     ANSWER_QUESTION,
     WILL_ANSWER,
+    MARK_FIELD,
+    ACTIVATE
 }

@@ -3,6 +3,7 @@ package cz.personal.vinegar.websocket;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.personal.vinegar.dataObjects.Question;
 import cz.personal.vinegar.dataObjects.RequestDataItem;
+import cz.personal.vinegar.enums.Action;
 import cz.personal.vinegar.services.QuestionService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -55,8 +56,14 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 case GET_QUESTION -> {
                     String questionCode = questionService.getQuestionCode(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
                     Question question = questionService.getQuestion(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
-                    boardSession.sendMessage(new TextMessage(dataItem.getPayload() + "*" + questionCode));
-                    readerSession.sendMessage(new TextMessage(question.getQuestionText() + "*" + question.getAnswer()));
+                    String payload = dataItem.getPayload();
+                    dataItem.setPayload(payload + "*" + questionCode);
+                    boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                    dataItem.setPayload(question.getQuestionText() + "*" + question.getAnswer());
+                    readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                }
+                case MARK_FIELD -> {
+                    boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
                 }
                 case IDLE -> log.info("Received IDLE response");
                 default -> log.error("Unknown action {}", dataItem.getAction());

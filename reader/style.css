@@ -21,3 +21,15 @@ button {
     width: 200px;
     font-size: 80px;
 }
+
+.blue {
+    background: blue;
+}
+
+.orange {
+    background: orange;
+}
+
+.gray {
+    background: gray;
+}

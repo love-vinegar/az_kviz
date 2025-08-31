@@ -1,5 +1,7 @@
 const socket = new WebSocket('ws://localhost:8080/ws');
 
+let activeField;
+
 socket.addEventListener('open', function (event) {
     console.log('WebSocket connected');
     const requestDataItem = {
@@ -13,14 +15,15 @@ socket.addEventListener('open', function (event) {
 
 socket.addEventListener('message', function (event) {
     console.log('Message from server:', event.data);
-    let ahoj = event.data.split("*");
+    let message = JSON.parse(event.data);
+    let payload = message.payload.split("*");
     const question = document.createElement("p");
-    question.innerText = ahoj[0];
+    question.innerText = payload[0];
     document.getElementById("question").innerHTML = "";
     document.getElementById("question").appendChild(question)
 
     const answer = document.createElement("p");
-    answer.innerText = ahoj[1];
+    answer.innerText = payload[1];
     document.getElementById("answer").innerHTML = "";
     document.getElementById("answer").appendChild(answer)
 });
@@ -47,20 +50,27 @@ document.addEventListener("DOMContentLoaded", function () {
 })
 
 function getQuestionFromServer(message) {
+    activeField = message.slice(0, -2);
     const requestDataItem = {
         sender: "READER",
         action: "GET_QUESTION",
-        payload: message.slice(0, -2)
+        payload: activeField
     };
 
     socket.send(JSON.stringify(requestDataItem));
 }
 
-function getMarkField(message, value) {
+function markField(value) {
+   if(activeField == null) {
+       return;
+   }
+
+   document.getElementById(value+"id").classList.add(value)
+
     const requestDataItem = {
         sender: "READER",
         action: "MARK_FIELD",
-        payload: message + "*" + value
+        payload: activeField + "*" + value
     };
 
     socket.send(JSON.stringify(requestDataItem));

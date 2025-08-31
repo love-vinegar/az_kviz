@@ -2,6 +2,7 @@ package cz.personal.vinegar.dataObjects;
 
 import cz.personal.vinegar.enums.Action;
 import cz.personal.vinegar.enums.Sender;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data

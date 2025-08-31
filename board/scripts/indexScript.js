@@ -13,8 +13,8 @@ socket.addEventListener('open', function (event) {
 
 socket.addEventListener('message', function (event) {
     console.log('Message from server:', event);
-    let i = event.data.split('*');
-    console.log(i);
+    let message = JSON.parse(event.data);
+    let i = message.payload.split('*');
     document.getElementById(i[0]+"id").innerText = i[1];
     activate(i[0]+"id");
 });

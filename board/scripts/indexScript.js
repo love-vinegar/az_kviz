@@ -14,9 +14,17 @@ socket.addEventListener('open', function (event) {
 socket.addEventListener('message', function (event) {
     console.log('Message from server:', event);
     let message = JSON.parse(event.data);
-    let i = message.payload.split('*');
-    document.getElementById(i[0]+"id").innerText = i[1];
-    activate(i[0]+"id");
+
+    if(message.action === "GET_QUESTION") {
+        let i = message.payload.split('*');
+        document.getElementById(i[0]+"id").innerText = i[1];
+        activate(i[0]+"id");
+    } else if (message.action === "MARK_FIELD") {
+        let i = message.payload.split('*');
+       document.getElementById(i[0] + "id").classList.remove("gray")
+        document.getElementById(i[0] + "id").classList.add(i[1])
+        resetAnimation()
+    }
 });
 
 socket.addEventListener('error', function (event) {

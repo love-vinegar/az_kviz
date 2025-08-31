@@ -16,16 +16,21 @@ socket.addEventListener('open', function (event) {
 socket.addEventListener('message', function (event) {
     console.log('Message from server:', event.data);
     let message = JSON.parse(event.data);
-    let payload = message.payload.split("*");
-    const question = document.createElement("p");
-    question.innerText = payload[0];
-    document.getElementById("question").innerHTML = "";
-    document.getElementById("question").appendChild(question)
 
-    const answer = document.createElement("p");
-    answer.innerText = payload[1];
-    document.getElementById("answer").innerHTML = "";
-    document.getElementById("answer").appendChild(answer)
+    if(message.action === "GET_QUESTION") {
+        let payload = message.payload.split("*");
+        const question = document.createElement("p");
+        question.innerText = payload[0];
+        document.getElementById("question").innerHTML = "";
+        document.getElementById("question").appendChild(question)
+
+        const answer = document.createElement("p");
+        answer.innerText = payload[1];
+        document.getElementById("answer").innerHTML = "";
+        document.getElementById("answer").appendChild(answer)
+    } else if (message.action === "MARK_FIELD") {
+        console.log("ahoj")
+    }
 });
 
 socket.addEventListener('error', function (event) {
@@ -47,6 +52,18 @@ document.addEventListener("DOMContentLoaded", function () {
             getQuestionFromServer(button.getAttribute("id"));
         })
     }
+
+
+     document.getElementById("blue").addEventListener("click", function (event) {
+         markField(event)
+    })
+    document.getElementById("orange").addEventListener("click", function (event) {
+        markField(event)
+    })
+    document.getElementById("gray").addEventListener("click", function (event) {
+        markField(event)
+    })
+
 })
 
 function getQuestionFromServer(message) {
@@ -60,12 +77,15 @@ function getQuestionFromServer(message) {
     socket.send(JSON.stringify(requestDataItem));
 }
 
-function markField(value) {
+function markField(event) {
+    console.log(event)
+   let value = event.target.getAttribute("id");
+    console.log(value)
    if(activeField == null) {
        return;
    }
 
-   document.getElementById(value+"id").classList.add(value)
+   document.getElementById(activeField+"id").classList.add(value)
 
     const requestDataItem = {
         sender: "READER",

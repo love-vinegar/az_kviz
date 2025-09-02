@@ -1,35 +1,45 @@
-
+body {
+    padding: 0;
+    margin: 0;
+}
 .reader_elements {
-    height: 250px;
-    width: 1000px;
-
+    width: 100%;
     border-style: solid;
     border-width: 20px;
     border-radius: 10px;
     border-color: black;
     font-size: 100px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
-button {
-    height: 250px;
-    width: 250px;
-    font-size: 80px;
+#container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 #container > button {
+    aspect-ratio: 1 / 0.7; /* makes buttons square */
+    width: 100%;
+    font-size: 5rem;
+    box-sizing: border-box;
+}
+
+#response {
+    display: flex;
+    width: 100%;
+}
+
+#response > button {
+    flex: 1;
     height: 200px;
-    width: 200px;
-    font-size: 80px;
-}
-
-.blue {
-    background: blue;
-}
-
-.orange {
-    background: orange;
-}
-
-.gray {
-    background: gray;
+    font-size: 2rem;
+    box-sizing: border-box;
 }

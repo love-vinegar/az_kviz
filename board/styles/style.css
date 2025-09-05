@@ -1,3 +1,7 @@
+body {
+    background: #111; /* dark background so glow stands out */
+}
+
 #container {
     position: relative;
     width: 100%;
@@ -56,4 +60,24 @@
 
 .gray {
     background: gray;
+}
+
+.glowing {
+    animation: pulseGlow 1.5s ease-in-out infinite;
+    background: orange;
+}
+
+@keyframes pulseGlow {
+    0% {
+        background: orange;
+        scale: 1;
+    }
+    50% {
+       background: #ffeac9;
+        scale: 1.2;
+    }
+    100% {
+       background: orange;
+        scale: 1;
+    }
 }

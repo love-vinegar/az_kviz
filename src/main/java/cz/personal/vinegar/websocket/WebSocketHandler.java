@@ -1,10 +1,11 @@
 package cz.personal.vinegar.websocket;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.personal.vinegar.HexTriangle;
 import cz.personal.vinegar.dataObjects.Question;
 import cz.personal.vinegar.dataObjects.RequestDataItem;
-import cz.personal.vinegar.enums.Action;
 import cz.personal.vinegar.services.QuestionService;
+import java.util.Arrays;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import static cz.personal.vinegar.enums.Action.WIN;
 import static cz.personal.vinegar.enums.Sender.BOARD;
 import static cz.personal.vinegar.enums.Sender.READER;
 
@@ -26,6 +28,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     ObjectMapper objectMapper = new ObjectMapper();
 
     boolean isFirstPlayerTurn = true;
+    String currentField = "";
+    HexTriangle triangle = new HexTriangle(7);
 
     @Autowired
     public WebSocketHandler(QuestionService questionService) {
@@ -57,13 +61,29 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     String questionCode = questionService.getQuestionCode(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
                     Question question = questionService.getQuestion(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
                     String payload = dataItem.getPayload();
+                    currentField = payload;
                     dataItem.setPayload(payload + "*" + questionCode);
                     boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
                     dataItem.setPayload(question.getQuestionText() + "*" + question.getAnswer());
                     readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                    isFirstPlayerTurn = !isFirstPlayerTurn;
                 }
                 case MARK_FIELD -> {
+                    String color = getColor(dataItem);
+                    dataItem.setPayload(color);
+                    int[] coords = HexTriangle.indexToRowCol(Integer.parseInt(currentField)-1);
+                    log.info(Arrays.toString(coords));
+                    triangle.setValue(coords[0], coords[1], color.equals("orange")?1:2);
+                    boolean ahoj = triangle.hasConnectingPath(color.equals("orange")?1:2);
+                    log.info(String.valueOf(ahoj));
                     boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                    readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                    if(ahoj) {
+                        dataItem.setAction(WIN);
+                        dataItem.setPayload(color);
+                        boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                        readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                    }
                 }
                 case IDLE -> log.info("Received IDLE response");
                 default -> log.error("Unknown action {}", dataItem.getAction());
@@ -74,8 +94,29 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    private String getColor(RequestDataItem dataItem) {
+        if(dataItem.getPayload().equals("no_answer")) {
+            return "gray";
+        }
+
+        if(isFirstPlayerTurn) {
+            if (dataItem.getPayload().equals("correct")) {
+                return "blue";
+            } else {
+                return "orange";
+            }
+        } else {
+            if (dataItem.getPayload().equals("correct")) {
+                return "orange";
+            } else {
+                return "blue";
+            }
+        }
+    }
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.info("Connection established to {}", session.getId());
     }
+
 }

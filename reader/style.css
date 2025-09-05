@@ -43,3 +43,15 @@ body {
     font-size: 2rem;
     box-sizing: border-box;
 }
+
+.blue {
+    background: blue;
+}
+
+.orange {
+    background: orange;
+}
+
+.gray {
+    background: gray;
+}

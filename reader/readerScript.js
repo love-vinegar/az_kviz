@@ -29,7 +29,8 @@ socket.addEventListener('message', function (event) {
         document.getElementById("answer").innerHTML = "";
         document.getElementById("answer").appendChild(answer)
     } else if (message.action === "MARK_FIELD") {
-        console.log("ahoj")
+        document.getElementById(activeField + "id").classList.remove("gray")
+        document.getElementById(activeField + "id").classList.add(message.payload)
     }
 });
 
@@ -54,15 +55,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-     document.getElementById("blue").addEventListener("click", function (event) {
-         markField(event)
-    })
-    document.getElementById("orange").addEventListener("click", function (event) {
-        markField(event)
-    })
-    document.getElementById("gray").addEventListener("click", function (event) {
-        markField(event)
-    })
 
 })
 
@@ -78,19 +70,15 @@ function getQuestionFromServer(message) {
 }
 
 function markField(event) {
-    console.log(event)
    let value = event.target.getAttribute("id");
-    console.log(value)
    if(activeField == null) {
        return;
    }
 
-   document.getElementById(activeField+"id").classList.add(value)
-
     const requestDataItem = {
         sender: "READER",
         action: "MARK_FIELD",
-        payload: activeField + "*" + value
+        payload: value
     };
 
     socket.send(JSON.stringify(requestDataItem));

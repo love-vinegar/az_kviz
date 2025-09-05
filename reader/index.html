@@ -7,17 +7,13 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="question" class="reader_elements">
-        aaaaaaaaaaaaaaaaaaaaaaa
-    </div>
-    <div id="answer" class="reader_elements">
-        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-    </div>
+    <div id="question" class="reader_elements"></div>
+    <div id="answer" class="reader_elements"></div>
     <div id="container"></div>
     <div id="response">
-        <button id="blue">blue</button>
-        <button id="orange">orange</button>
-        <button id="gray">gray</button>
+        <button id="correct" onclick="markField(event)">correct</button>
+        <button id="incorrect" onclick="markField(event)">incorrect</button>
+        <button id="no_answer" onclick="markField(event)">no_answer</button>
     </div>
 </body>
 </html>

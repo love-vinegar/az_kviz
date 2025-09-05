@@ -20,10 +20,12 @@ socket.addEventListener('message', function (event) {
         document.getElementById(i[0]+"id").innerText = i[1];
         activate(i[0]+"id");
     } else if (message.action === "MARK_FIELD") {
-        let i = message.payload.split('*');
-       document.getElementById(i[0] + "id").classList.remove("gray")
-        document.getElementById(i[0] + "id").classList.add(i[1])
+        document.getElementsByClassName("active")[0].classList.remove("gray")
+        document.getElementsByClassName("active")[0].classList.add(message.payload)
         resetAnimation()
+    } else if (message.action === "WIN") {
+        resetAnimation()
+        document.querySelectorAll("div."+message.payload).forEach(el => el.classList.add("glowing"));
     }
 });
 

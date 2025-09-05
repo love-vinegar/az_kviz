@@ -6,5 +6,6 @@ public enum Action {
     ANSWER_QUESTION,
     WILL_ANSWER,
     MARK_FIELD,
+    WIN,
     ACTIVATE
 }

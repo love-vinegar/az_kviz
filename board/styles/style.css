@@ -13,7 +13,7 @@ body {
     justify-content: center;
     align-items: center;
     position: absolute;
-    background: #a2e0f8;
+    background: #b9b9b9;
     width: 100px;
     height: 100px;
     text-align: center;
@@ -30,10 +30,6 @@ body {
     top: var(--top, 0px);
     transition: transform 0.5s ease, z-index 10s linear 0.5s, left 0.5s ease-in, top 0.5s ease-in;
     z-index: 0;
-}
-
-.question:hover {
-    background: #75d8ff;
 }
 
 .question.inactive {
@@ -64,20 +60,17 @@ body {
 
 .glowing {
     animation: pulseGlow 1.5s ease-in-out infinite;
-    background: orange;
 }
 
 @keyframes pulseGlow {
     0% {
-        background: orange;
         scale: 1;
     }
     50% {
-       background: #ffeac9;
+        background: white;
         scale: 1.2;
     }
     100% {
-       background: orange;
         scale: 1;
     }
 }

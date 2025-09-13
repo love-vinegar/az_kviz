@@ -12,7 +12,7 @@ public class QuestionService {
 
     List<Question> questionsFirstPlayer;
     List<Question> questionsSecondPlayer;
-
+    List<Question> questionsYesNo;
     public QuestionService () {
         fillQuestions();
     }
@@ -80,6 +80,37 @@ public class QuestionService {
                 new Question("27AQuestion", "i", "iAnswer", false),
                 new Question("28AQuestion", "a", "aAnswer", false)
         );
+
+        questionsYesNo = List.of(
+                new Question("1AQuestion", "X", "yes", false),
+                new Question("2AQuestion", "X", "no", false),
+                new Question("3AQuestion", "X", "yes", false),
+                new Question("4AQuestion", "X", "no", false),
+                new Question("5AQuestion", "X", "yes", true),
+                new Question("6AQuestion", "X", "no", true),
+                new Question("7AQuestion", "X", "yes", true),
+                new Question("8AQuestion", "X", "no", true),
+                new Question("9AQuestion", "X", "yes", true),
+                new Question("10A0Question", "X", "no", true),
+                new Question("11AQuestion", "X", "yes", false),
+                new Question("12AQuestion", "X", "no", false),
+                new Question("13AQuestion", "X", "yes", false),
+                new Question("14AQuestion", "X", "no", false),
+                new Question("15AQuestion", "X", "yes", false),
+                new Question("16AQuestion", "X", "no", false),
+                new Question("17AQuestion", "X", "yes", false),
+                new Question("18AQuestion", "X", "no", false),
+                new Question("19AQuestion", "X", "yes", false),
+                new Question("20AQuestion", "X", "no", false),
+                new Question("21AQuestion", "X", "yes", false),
+                new Question("22AQuestion", "X", "no", false),
+                new Question("23AQuestion", "X", "yes", false),
+                new Question("24AQuestion", "X", "no", false),
+                new Question("25AQuestion", "X", "yes", false),
+                new Question("26AQuestion", "X", "no", false),
+                new Question("27AQuestion", "X", "yes", false),
+                new Question("28AQuestion", "X", "no", false)
+        );
     }
 
     public Question getQuestion(boolean firstPlayer, int questionIndex) {
@@ -96,6 +127,16 @@ public class QuestionService {
         }
     }
 
+    public Question getYesNoQuestion(int questionIndex) {
+        questionIndex -= 1;
+        if(questionIndex < 0 || questionIndex >= questionsFirstPlayer.size()) {
+            log.error("Invalid question index");
+            return null;
+        }
+
+        return questionsYesNo.get(questionIndex);
+    }
+
     public String getQuestionCode(boolean firstPlayer, int questionIndex) {
         questionIndex -= 1;
         if(questionIndex < 0 || questionIndex >= questionsFirstPlayer.size()) {
@@ -108,5 +149,15 @@ public class QuestionService {
         } else {
             return questionsSecondPlayer.get(questionIndex).getQuestionCode();
         }
+    }
+
+    public String getYesNoQuestionCode(int questionIndex) {
+        questionIndex -= 1;
+        if(questionIndex < 0 || questionIndex >= questionsFirstPlayer.size()) {
+            log.error("Invalid question index");
+            return null;
+        }
+
+        return questionsYesNo.get(questionIndex).getQuestionCode();
     }
 }

@@ -48,7 +48,6 @@ public class HexTriangle {
         for (int r = 0; r < n; r++) {
             for (int c = 0; c <= r; c++) {
                 if (!visited[r][c] && values[r][c] == targetValue) {
-                    // explore this component
                     Set<String> borders = new HashSet<>();
                     List<int[]> stack = new ArrayList<>();
                     stack.add(new int[]{r, c});
@@ -58,12 +57,10 @@ public class HexTriangle {
                         int[] cell = stack.remove(stack.size() - 1);
                         int cr = cell[0], cc = cell[1];
 
-                        // check borders (LEFT, RIGHT, BOTTOM)
                         if (cc == 0) borders.add("LEFT");
                         if (cc == cr) borders.add("RIGHT");
                         if (cr == n - 1) borders.add("BOTTOM");
 
-                        // explore neighbors
                         for (int[] nb : getNeighbors(cr, cc)) {
                             int nr = nb[0], nc = nb[1];
                             if (!visited[nr][nc] && values[nr][nc] == targetValue) {
@@ -74,7 +71,7 @@ public class HexTriangle {
                     }
 
                     if (borders.size() == 3) {
-                        return true; // found path touching all 3 sides
+                        return true;
                     }
                 }
             }

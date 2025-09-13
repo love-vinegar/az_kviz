@@ -58,8 +58,18 @@ public class WebSocketHandler extends TextWebSocketHandler {
             log.info(dataItem.toString());
             switch(dataItem.getAction()) {
                 case GET_QUESTION -> {
-                    String questionCode = questionService.getQuestionCode(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
-                    Question question = questionService.getQuestion(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
+                    int[] coords = HexTriangle.indexToRowCol(Integer.parseInt(dataItem.getPayload())-1);
+                    log.info(Arrays.toString(coords));
+
+                    String questionCode;
+                    Question question;
+                    if(triangle.getValue(coords[0], coords[1]) == 3) {
+                        questionCode = questionService.getYesNoQuestionCode(Integer.parseInt(dataItem.getPayload()));
+                        question = questionService.getYesNoQuestion(Integer.parseInt(dataItem.getPayload()));
+                    } else {
+                        questionCode = questionService.getQuestionCode(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
+                        question = questionService.getQuestion(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
+                    }
                     String payload = dataItem.getPayload();
                     currentField = payload;
                     dataItem.setPayload(payload + "*" + questionCode);
@@ -73,16 +83,18 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     dataItem.setPayload(color);
                     int[] coords = HexTriangle.indexToRowCol(Integer.parseInt(currentField)-1);
                     log.info(Arrays.toString(coords));
-                    triangle.setValue(coords[0], coords[1], color.equals("orange")?1:2);
-                    boolean ahoj = triangle.hasConnectingPath(color.equals("orange")?1:2);
-                    log.info(String.valueOf(ahoj));
+                    triangle.setValue(coords[0], coords[1], getFieldIndex(color));
                     boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
                     readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
-                    if(ahoj) {
-                        dataItem.setAction(WIN);
-                        dataItem.setPayload(color);
-                        boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
-                        readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                    if(!"gray".equals(color)) {
+                        boolean ahoj = triangle.hasConnectingPath(getFieldIndex(color));
+                        log.info(String.valueOf(ahoj));
+                        if(ahoj) {
+                            dataItem.setAction(WIN);
+                            dataItem.setPayload(color);
+                            boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                            readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                        }
                     }
                 }
                 case IDLE -> log.info("Received IDLE response");
@@ -92,6 +104,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
         } catch (Exception e) {
             log.error("Error while handling text message", e);
         }
+    }
+
+    private int getFieldIndex(String field) {
+       if(field.equals("orange")) {
+           return 1;
+       }
+       if(field.equals("blue")) {
+           return 2;
+       }
+       return 3;
     }
 
     private String getColor(RequestDataItem dataItem) {

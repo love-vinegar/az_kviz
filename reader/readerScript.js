@@ -31,6 +31,8 @@ socket.addEventListener('message', function (event) {
     } else if (message.action === "MARK_FIELD") {
         document.getElementById(activeField + "id").classList.remove("gray")
         document.getElementById(activeField + "id").classList.add(message.payload)
+    } else if (message.action === "WIN") {
+        document.body.innerText = "WIN"
     }
 });
 

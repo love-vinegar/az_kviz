@@ -74,15 +74,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
             div.setAttribute("id", index+"id");
             index++;
-
-            div.addEventListener("click", function (event) {
-                if(div.classList.contains("active")) {
-                    resetAnimation()
-                    return;
-                }
-                activate(div.getAttribute("id"))
-                getQuestionFromServer(div.getAttribute("id"));
-            })
         }
     }
 });

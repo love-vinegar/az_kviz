@@ -76,10 +76,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
                     dataItem.setPayload(question.getQuestionText() + "*" + question.getAnswer());
                     readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
-                    isFirstPlayerTurn = !isFirstPlayerTurn;
                 }
                 case MARK_FIELD -> {
                     String color = getColor(dataItem);
+                    isFirstPlayerTurn = "orange".equals(color);
                     dataItem.setPayload(color);
                     int[] coords = HexTriangle.indexToRowCol(Integer.parseInt(currentField)-1);
                     log.info(Arrays.toString(coords));

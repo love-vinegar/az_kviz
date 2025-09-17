@@ -28,6 +28,7 @@ socket.addEventListener('message', function (event) {
         answer.innerText = payload[1];
         document.getElementById("answer").innerHTML = "";
         document.getElementById("answer").appendChild(answer)
+        activeField = payload[2]
     } else if (message.action === "MARK_FIELD") {
         document.getElementById(activeField + "id").classList.remove("gray")
         document.getElementById(activeField + "id").classList.add(message.payload)

@@ -5,7 +5,12 @@ import cz.personal.vinegar.HexTriangle;
 import cz.personal.vinegar.dataObjects.Question;
 import cz.personal.vinegar.dataObjects.RequestDataItem;
 import cz.personal.vinegar.services.QuestionService;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +27,7 @@ import static cz.personal.vinegar.enums.Sender.READER;
 @Slf4j
 public class WebSocketHandler extends TextWebSocketHandler {
     WebSocketSession boardSession = null;
-    WebSocketSession readerSession = null;
+    List<WebSocketSession> readerSession = new ArrayList<>();
 
     QuestionService questionService;
     ObjectMapper objectMapper = new ObjectMapper();
@@ -45,12 +50,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
             if(dataItem.getSender().equals(BOARD)) {
                 log.info("Received BOARD response");
                 boardSession = session;
-            } else if (dataItem.getSender().equals(READER)) {
+            } else if (dataItem.getSender().equals(READER) && !readerSession.contains(session)) {
                 log.info("Received READER response");
-                readerSession = session;
+                readerSession.add(session);
             }
 
-            if(boardSession == null || readerSession == null) {
+            if(boardSession == null || readerSession.isEmpty()) {
                 log.warn("Game is not ready");
                 return;
             }
@@ -64,18 +69,24 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     String questionCode;
                     Question question;
                     if(triangle.getValue(coords[0], coords[1]) == 3) {
-                        questionCode = questionService.getYesNoQuestionCode(Integer.parseInt(dataItem.getPayload()));
                         question = questionService.getYesNoQuestion(Integer.parseInt(dataItem.getPayload()));
+                        questionCode = question.getQuestionCode();
                     } else {
-                        questionCode = questionService.getQuestionCode(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
                         question = questionService.getQuestion(isFirstPlayerTurn, Integer.parseInt(dataItem.getPayload()));
+                        questionCode = question.getQuestionCode();
                     }
                     String payload = dataItem.getPayload();
                     currentField = payload;
                     dataItem.setPayload(payload + "*" + questionCode);
                     boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
-                    dataItem.setPayload(question.getQuestionText() + "*" + question.getAnswer());
-                    readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                    dataItem.setPayload(question.getQuestionText() + "*" + question.getAnswer() + "*" + payload);
+                    readerSession.forEach(s -> {
+                        try {
+                            s.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                        } catch (IOException e) {
+                            log.error("Error sending message to reader");
+                        }
+                    });
                 }
                 case MARK_FIELD -> {
                     String color = getColor(dataItem);
@@ -85,7 +96,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     log.info(Arrays.toString(coords));
                     triangle.setValue(coords[0], coords[1], getFieldIndex(color));
                     boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
-                    readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                    readerSession.forEach(s -> {
+                        try {
+                            s.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                        } catch (IOException e) {
+                            log.error("Error sending message to reader");
+                        }
+                    });
                     if(!"gray".equals(color)) {
                         boolean ahoj = triangle.hasConnectingPath(getFieldIndex(color));
                         log.info(String.valueOf(ahoj));
@@ -93,7 +110,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
                             dataItem.setAction(WIN);
                             dataItem.setPayload(color);
                             boardSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
-                            readerSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                            readerSession.forEach(s -> {
+                               try {
+                                   s.sendMessage(new TextMessage(objectMapper.writeValueAsString(dataItem)));
+                               } catch (Exception e) {
+                                   log.error("Error sending message to reader");
+                               }
+                            });
                         }
                     }
                 }
